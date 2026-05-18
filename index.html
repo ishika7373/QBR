@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atomicwork QBR Generator Agent</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- SheetJS CDN for Excel Ingestion -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Navigation -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon"></div>
+                <div class="logo-text">
+                    <span class="brand-name">atomicwork</span>
+                    <span class="agent-tag">QBR Agent v1.0</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="toggle-view-btn" class="secondary-btn">
+                    <i data-lucide="layout-grid"></i>
+                    <span>Document View</span>
+                </button>
+                <button id="export-pdf-btn" class="primary-btn">
+                    <i data-lucide="download"></i>
+                    <span>Export Deck</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- Left Panel: Input & Controls -->
+            <section class="control-panel">
+                <div class="panel-tabs">
+                    <button class="tab-btn active" data-tab="ai-parser">
+                        <i data-lucide="sparkles"></i>
+                        <span>AI Agent Ingest</span>
+                    </button>
+                    <button class="tab-btn" data-tab="manual-form">
+                        <i data-lucide="sliders"></i>
+                        <span>Manual Adjustments</span>
+                    </button>
+                </div>
+
+                <div class="tab-content active" id="tab-ai-parser">
+                    <div class="instruction-box">
+                        <h3>Agentic Text Ingestion</h3>
+                        <p>Paste raw notes, email threads, or structured client data below. The Atomicwork QBR Agent will intelligently parse the fields, calculate ROI metrics, and automatically generate your executive deck.</p>
+                    </div>
+                    <div class="input-group">
+                        <label for="raw-data-input">Paste Raw Client Data</label>
+                        <textarea id="raw-data-input" placeholder="ACCOUNT DETAILS:
+Company Name: Zomato
+Industry: Food Tech
+Contract Value: $48,000 ARR
+Renewal Date: Sept 30, 2026
+..."></textarea>
+                    </div>
+                    <button id="run-parser-btn" class="action-btn purple-gradient-btn">
+                        <i data-lucide="wand-2"></i>
+                        <span>Run QBR Agent Parser</span>
+                    </button>
+
+                    <!-- Excel Drop Zone Ingestion -->
+                    <div class="excel-upload-container">
+                        <div class="form-section-header" style="margin-top: 16px;">
+                            <i data-lucide="file-spreadsheet"></i>
+                            <span>Excel / CSV Ingestion</span>
+                        </div>
+                        <div class="drop-zone" id="excel-drop-zone">
+                            <i data-lucide="upload-cloud" class="upload-icon"></i>
+                            <p class="drop-zone-text">Drag & drop spreadsheet or click to upload</p>
+                            <p class="drop-zone-subtext">Supports .xlsx, .xls, .csv</p>
+                            <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="hidden-input">
+                        </div>
+                        <div id="upload-success-badge" class="upload-success-badge hidden">
+                            <i data-lucide="check-circle-2"></i>
+                            <span id="upload-filename">client_data.xlsx loaded</span>
+                        </div>
+                    </div>
+
+                    <div id="agent-loading" class="agent-loading-overlay hidden">
+                        <div class="spinner"></div>
+                        <div class="loading-status">
+                            <p class="status-title">Agent Processing...</p>
+                            <p id="loading-step" class="status-subtitle">Parsing company details...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-manual-form">
+                    <form id="qbr-data-form">
+                        <!-- Account Details Section -->
+                        <div class="form-section-header">
+                            <i data-lucide="briefcase"></i>
+                            <span>Account Details</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="company-name">Company Name</label>
+                                <input type="text" id="company-name" required value="Zomato">
+                            </div>
+                            <div class="input-group">
+                                <label for="industry">Industry</label>
+                                <input type="text" id="industry" required value="Food Tech">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="contract-value">Contract Value (ARR)</label>
+                                <input type="text" id="contract-value" required value="$48,000 ARR">
+                            </div>
+                            <div class="input-group">
+                                <label for="renewal-date">Renewal Date</label>
+                                <input type="text" id="renewal-date" required value="Sept 30, 2026">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="primary-champion">Primary Champion</label>
+                                <input type="text" id="primary-champion" required value="Anshul Sharma, Head of IT Service Delivery">
+                            </div>
+                            <div class="input-group">
+                                <label for="exec-sponsor">Executive Sponsor</label>
+                                <input type="text" id="exec-sponsor" required value="Sandeep Kumar, VP of Engineering">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="csm-owner">CSM Owner</label>
+                                <input type="text" id="csm-owner" required value="Ishika Sharma">
+                            </div>
+                            <div class="input-group">
+                                <label for="qbr-date">QBR Date</label>
+                                <input type="text" id="qbr-date" required value="June 15, 2026">
+                            </div>
+                        </div>
+
+                        <!-- Usage & Adoption -->
+                        <div class="form-section-header">
+                            <i data-lucide="activity"></i>
+                            <span>Usage & Adoption (Last 90 Days)</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="active-users">Active Users</label>
+                                <input type="number" id="active-users" required value="340">
+                            </div>
+                            <div class="input-group">
+                                <label for="total-licensed">Licensed Seats</label>
+                                <input type="number" id="total-licensed" required value="400">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="tickets-raised">Tickets Raised</label>
+                                <input type="number" id="tickets-raised" required value="1240">
+                            </div>
+                            <div class="input-group">
+                                <label for="tickets-deflected">Auto-Resolved by AI</label>
+                                <input type="number" id="tickets-deflected" required value="820">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="resolution-before">Avg Resolution Time Before (hours)</label>
+                                <input type="number" step="0.1" id="resolution-before" required value="18">
+                            </div>
+                            <div class="input-group">
+                                <label for="resolution-current">Avg Resolution Time Current (hours)</label>
+                                <input type="number" step="0.1" id="resolution-current" required value="4.5">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="top-use-cases">Top 3 Use Cases Active (comma separated)</label>
+                            <input type="text" id="top-use-cases" required value="IT Helpdesk, HR Queries, Asset Requests">
+                        </div>
+                        <div class="input-group">
+                            <label for="not-adopted">Features Not Yet Adopted (comma separated)</label>
+                            <input type="text" id="not-adopted" required value="Journey Builder, Analytics Dashboard">
+                        </div>
+
+                        <!-- Support & Relationship -->
+                        <div class="form-section-header">
+                            <i data-lucide="heart-handshake"></i>
+                            <span>Support & Sentiment</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="csat">CSAT Score (out of 5)</label>
+                                <input type="number" step="0.1" id="csat" required value="4.2">
+                            </div>
+                            <div class="input-group">
+                                <label for="nps">NPS Score</label>
+                                <input type="number" id="nps" required value="42">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="open-escalations">Open Escalations</label>
+                            <input type="text" id="open-escalations" required value="1 — API sync delay with Okta, raised 12 days ago">
+                        </div>
+                        <div class="input-group">
+                            <label for="resolved-notable">Notable Resolved Issues</label>
+                            <input type="text" id="resolved-notable" required value="SSO login bug fixed in March">
+                        </div>
+                        <div class="input-group">
+                            <label for="champion-sentiment">Champion Sentiment</label>
+                            <input type="text" id="champion-sentiment" required value="positive, actively refers peers">
+                        </div>
+                        <div class="input-group">
+                            <label for="risks">Account Risks</label>
+                            <textarea id="risks" rows="2" required>budget review in Q3, new IT Head joining next month</textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="expansion-signals">Expansion Signals</label>
+                            <input type="text" id="expansion-signals" required value="Finance team expressed interest in onboarding onto the platform">
+                        </div>
+
+                        <!-- Previous Goals -->
+                        <div class="form-section-header">
+                            <i data-lucide="target"></i>
+                            <span>Goals Set Last QBR</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="goal-1">Goal 1</label>
+                            <input type="text" id="goal-1" required value="Reach 85% AI deflection rate by Q2">
+                        </div>
+                        <div class="input-group">
+                            <label for="goal-2">Goal 2</label>
+                            <input type="text" id="goal-2" required value="Roll out to HR team by March">
+                        </div>
+                        <div class="input-group">
+                            <label for="goal-3">Goal 3</label>
+                            <input type="text" id="goal-3" required value="Reduce avg resolution time below 6 hours">
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Right Panel: Visual Slide Deck Presentation -->
+            <section class="preview-panel">
+                <div class="deck-controls">
+                    <button id="prev-slide-btn" class="icon-btn">
+                        <i data-lucide="chevron-left"></i>
+                    </button>
+                    <span class="slide-indicator">Slide <span id="current-slide-num">1</span> of 8</span>
+                    <button id="next-slide-btn" class="icon-btn">
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+                </div>
+
+                <!-- Slide Container (PowerPoint layout) -->
+                <div class="slide-container" id="slide-viewport">
+                    <!-- Slide 1: Cover Slide -->
+                    <div class="slide active-slide" id="slide-1" data-slide-name="Title Slide">
+                        <div class="slide-header-logo">
+                            <div class="atomicwork-badge">atomicwork</div>
+                        </div>
+                        <div class="cover-content">
+                            <span class="cover-pretitle">QUARTERLY BUSINESS REVIEW</span>
+                            <h1 class="cover-title" id="slide-cover-title">Zomato Support Operations</h1>
+                            <p class="cover-subtitle">Continuous Deflection & Agentic Service Management</p>
+                        </div>
+                        <div class="cover-footer">
+                            <div class="footer-metadata">
+                                <div><strong>Client:</strong> <span class="data-company-name">Zomato</span> (<span class="data-industry">Food Tech</span>)</div>
+                                <div><strong>ARR:</strong> <span class="data-contract-value">$48,000 ARR</span></div>
+                                <div><strong>Renewal Date:</strong> <span class="data-renewal-date">Sept 30, 2026</span></div>
+                            </div>
+                            <div class="footer-metadata">
+                                <div><strong>Prepared by:</strong> <span class="data-csm-owner">Ishika Sharma</span></div>
+                                <div><strong>Review Date:</strong> <span class="data-qbr-date">June 15, 2026</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: Executive Summary -->
+                    <div class="slide" id="slide-2" data-slide-name="Executive Summary">
+                        <div class="slide-header">
+                            <h2>Executive Summary</h2>
+                            <span class="slide-tag">Headline Narrative</span>
+                        </div>
+                        <div class="slide-body grid-2">
+                            <div class="summary-card text-block">
+                                <h3>Operational Headline</h3>
+                                <p id="slide-exec-summary-narrative" class="executive-lead-text">
+                                    Zomato's support ecosystem has experienced substantial maturity over the last 90 days, driven by the expansion of Atomicwork's agentic deflection capabilities. By resolving routine tickets instantly within communication channels, Zomato has successfully protected employee focus hours while significantly thinning the manual ticketing queue.
+                                </p>
+                            </div>
+                            <div class="metrics-quick-glance">
+                                <div class="quick-metric-card border-purple">
+                                    <span class="metric-label">AI Auto-Resolution</span>
+                                    <span id="slide-exec-deflection" class="metric-value">66.1%</span>
+                                    <span class="metric-sublabel">Total tickets solved by AI</span>
+                                </div>
+                                <div class="quick-metric-card border-coral">
+                                    <span class="metric-label">MTTR Improvement</span>
+                                    <span id="slide-exec-mttr-change" class="metric-value">75% ↓</span>
+                                    <span class="metric-sublabel">From 18 hrs to 4.5 hrs</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slide-footer">
+                            <span>Zomato Limited &bull; Quarterly Business Review &bull; Confidential</span>
+                            <span class="page-num">2 / 8</span>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: Value Delivered -->
+                    <div class="slide" id="slide-3" data-slide-name="Value Delivered">
+                        <div class="slide-header">
+                            <h2>Business Value Delivered</h2>
+                            <span class="slide-tag">Quantified Returns</span>
+                        </div>
+                        <div class="slide-body">
+                            <div class="metrics-grid">
+                                <div class="metric-box">
+                                    <i data-lucide="clock" class="icon-purple"></i>
+                                    <span class="metric-label">Time Saved per Ticket</span>
+                                    <span id="slide-val-time-saved" class="metric-display">13.5h</span>
+                                    <p class="metric-desc">Hours of active employee wait-time eliminated per query.</p>
+                                </div>
+                                <div class="metric-box">
+                                    <i data-lucide="zap" class="icon-coral"></i>
+                                    <span class="metric-label">Productivity Reclaimed</span>
+                                    <span id="slide-val-total-hours" class="metric-display">14,760h</span>
+                                    <p class="metric-desc">Total business hours returned to Zomato operations.</p>
+                                </div>
+                                <div class="metric-box">
+                                    <i data-lucide="users-2" class="icon-green"></i>
+                                    <span class="metric-label">Reclaimed Desk Capacity</span>
+                                    <span id="slide-val-fte" class="metric-display">~2.5 FTE</span>
+                                    <p class="metric-desc">Routine tasks deflected, scaling human service desk capacity.</p>
+                                </div>
+                                <div class="metric-box">
+                                    <i data-lucide="dollar-sign" class="icon-gold"></i>
+                                    <span class="metric-label">Estimated Dollar ROI</span>
+                                    <span id="slide-val-roi" class="metric-display">$369,000</span>
+                                    <p class="metric-desc">Calculated cost savings based on productivity reclaim.</p>
+                                </div>
+                            </div>
+                            <div class="value-highlight-bar">
+                                <i data-lucide="award"></i>
+                                <span><strong>Agentic Success:</strong> AI auto-resolved <strong id="slide-val-deflected-tickets">820</strong> out of <strong id="slide-val-total-tickets">1,240</strong> inbound requests instantly (<strong id="slide-val-deflection-pct">66.1%</strong> deflection) via Zomato's active Slack/Teams channel.</span>
+                            </div>
+                        </div>
+                        <div class="slide-footer">
+                            <span>Zomato Limited &bull; Quarterly Business Review &bull; Confidential</span>
+                            <span class="page-num">3 / 8</span>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4: Goals Review -->
+                    <div class="slide" id="slide-4" data-slide-name="Goals Review">
+                        <div class="slide-header">
+                            <h2>Goals Review (Last QBR)</h2>
+                            <span class="slide-tag">Performance Ledger</span>
+                        </div>
+                        <div class="slide-body">
+                            <table class="qbr-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 45%;">Established Goal</th>
+                                        <th style="width: 15%; text-align: center;">Status</th>
+                                        <th style="width: 40%;">Executive Explanation & Context</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="slide-goals-table-body">
+                                    <!-- Rendered dynamically by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="slide-footer">
+                            <span>Zomato Limited &bull; Quarterly Business Review &bull; Confidential</span>
+                            <span class="page-num">4 / 8</span>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5: Risks & Mitigations -->
+                    <div class="slide" id="slide-5" data-slide-name="Risks & Mitigations">
+                        <div class="slide-header">
+                            <h2>Risks & Mitigation Strategy</h2>
+                            <span class="slide-tag">Safeguards & Tactics</span>
+                        </div>
+                        <div class="slide-body grid-2">
+                            <div class="risk-col">
+                                <h3 class="section-title text-coral">Identified Risks</h3>
+                                <div id="slide-risks-list" class="action-card-list">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                            <div class="risk-col">
+                                <h3 class="section-title text-purple">Strategic Mitigations</h3>
+                                <div id="slide-mitigations-list" class="action-card-list">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slide-footer">
+                            <span>Zomato Limited &bull; Quarterly Business Review &bull; Confidential</span>
+                            <span class="page-num">5 / 8</span>
+                        </div>
+                    </div>
+
+                    <!-- Slide 6: Expansion & Expansion signals -->
+                    <div class="slide" id="slide-6" data-slide-name="Expansion Strategy">
+                        <div class="slide-header">
+                            <h2>ESM Expansion Blueprint</h2>
+                            <span class="slide-tag">Compounding Platform Value</span>
+                        </div>
+                        <div class="slide-body grid-2">
+                            <div class="expand-option-card border-left-purple">
+                                <div class="option-header">
+                                    <div class="option-title-group">
+                                        <span class="opportunity-pill">Expansion Option 1</span>
+                                        <h3>Finance & Payroll Department Integration</h3>
+                                    </div>
+                                    <span class="val-estimate" id="slide-expand-arr">+$18,000 ARR</span>
+                                </div>
+                                <p class="option-description">
+                                    Onboard the Zomato Finance team (expense queries, reimbursement claims, payroll timing) into the conversational AI flow. Deflect routine questions to protect busy payroll teams, expanding Atomicwork into a comprehensive Enterprise Service Management model.
+                                </p>
+                                <div class="option-benefits">
+                                    <span class="benefit-tag"><i data-lucide="users"></i> 150+ Additional Seats</span>
+                                    <span class="benefit-tag"><i data-lucide="zap"></i> 65% Query Automation</span>
+                                </div>
+                            </div>
+
+                            <div class="expand-option-card border-left-coral">
+                                <div class="option-header">
+                                    <div class="option-title-group">
+                                        <span class="opportunity-pill pill-coral">Expansion Option 2</span>
+                                        <h3>Journey Builder Automation</h3>
+                                    </div>
+                                    <span class="val-estimate">SaaS Stickiness</span>
+                                </div>
+                                <p class="option-description">
+                                    Replace manual onboarding/offboarding pipelines with Journey Builder workflows. Programmatically coordinate provisioning (Slack, Okta, Jira access) based on HR management tools, reducing onboarding cycles from days to minutes.
+                                </p>
+                                <div class="option-benefits">
+                                    <span class="benefit-tag"><i data-lucide="shield-check"></i> Security Auditing</span>
+                                    <span class="benefit-tag"><i data-lucide="sliders"></i> Zero-Touch Provisioning</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slide-footer">
+                            <span>Zomato Limited &bull; Quarterly Business Review &bull; Confidential</span>
+                            <span class="page-num">6 / 8</span>
+                        </div>
+                    </div>
+
+                    <!-- Slide 7: Goals for Next Quarter -->
+                    <div class="slide" id="slide-7" data-slide-name="Goals Next Q">
+                        <div class="slide-header">
+                            <h2>Goals for Next Quarter (Q3 2026)</h2>
+                            <span class="slide-tag">Forward Action plan</span>
+                        </div>
+                        <div class="slide-body">
+                            <div class="goals-timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-dot dot-purple">1</div>
+                                    <div class="timeline-content">
+                                        <h3 id="slide-nq-goal-1">Optimize AI Deflection to 80%</h3>
+                                        <p>Expand KBs, feed historic unresolved tickets to training modules, and activate conversational workflows for routine AD actions.</p>
+                                        <span class="timeline-target">Target: August 31, 2026</span>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot dot-coral">2</div>
+                                    <div class="timeline-content">
+                                        <h3 id="slide-nq-goal-2">Launch Finance & Payroll Pilot</h3>
+                                        <p>Integrate Finance KBs, configure approval chains, and run a live pilot for 100+ active Finance department employees.</p>
+                                        <span class="timeline-target">Target: August 15, 2026</span>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot dot-green">3</div>
+                                    <div class="timeline-content">
+                                        <h3 id="slide-nq-goal-3">Enable Executive Analytics & ROI Dashboard</h3>
+                                        <p>Implement reporting features for VP of Eng and Head of IT to automatically track reclaimed hours and performance statistics.</p>
+                                        <span class="timeline-target">Target: July 31, 2026</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slide-footer">
+                            <span>Zomato Limited &bull; Quarterly Business Review &bull; Confidential</span>
+                            <span class="page-num">7 / 8</span>
+                        </div>
+                    </div>
+
+                    <!-- Slide 8: CSM Room Prep (Internal Slide) -->
+                    <div class="slide" id="slide-8" data-slide-name="CSM talking points">
+                        <div class="slide-header">
+                            <h2>CSM In-the-Room Guidelines</h2>
+                            <span class="slide-tag text-purple bg-purple-trans">INTERNAL ONLY &bull; DO NOT SHOW CLIENT</span>
+                        </div>
+                        <div class="slide-body grid-2">
+                            <div class="talking-points-card border-top-green">
+                                <h3>What to Emphasize</h3>
+                                <ul id="slide-csm-emphasize">
+                                    <!-- Dynamic -->
+                                </ul>
+                            </div>
+                            <div class="talking-points-card border-top-coral">
+                                <h3>What to Handle Carefully</h3>
+                                <ul id="slide-csm-careful">
+                                    <!-- Dynamic -->
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="slide-footer">
+                            <span class="text-coral"><strong>CONFIDENTIAL:</strong> CSM Tactical talking points and renewal planning.</span>
+                            <span class="page-num">8 / 8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide Thumbnail Nav -->
+                <div class="thumbnail-nav" id="thumbnail-nav">
+                    <!-- Dynamic -->
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

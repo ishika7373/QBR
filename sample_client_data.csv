@@ -1,0 +1,27 @@
+Key,Value
+Company Name,Swiggy
+Industry,Food Delivery
+Contract Value,$38,000 ARR
+Renewal Date,Dec 15, 2026
+Primary Champion,Pranab Sen, IT Delivery Lead
+Executive Sponsor,Amit Verma, VP Operations
+CSM Owner,Ishika Sharma
+QBR Date,June 22, 2026
+Active Users,280
+Total Licensed,300
+Tickets Raised,980
+Tickets Auto-Resolved by AI Agent,640
+Avg Resolution Time (before Atomicwork),14
+Avg Resolution Time (current),3.2
+Top 3 Use Cases Active,IT Support, Leave Workflows, Device Access
+Features NOT yet adopted,Journey Builder, SSO integrations
+CSAT Score,4.5
+NPS,52
+Open Escalations,No open escalations
+Resolved Issues (notable),Teams sync issue resolved
+Champion Sentiment,very strong positive
+Risks,New CFO starting next month
+Expansion Signals,HR team expressed interest
+Goal 1,Achieve 70% AI deflection by Q2
+Goal 2,Ingest IT service request playbook
+Goal 3,Cut MTTR under 4 hours
