@@ -76,7 +76,7 @@ USAGE & ADOPTION DATA (last 90 days):
 - Active Users: 340 out of 400 licensed
 - Tickets Raised: 1,240
 - Tickets Auto-Resolved by AI Agent: 820
-- Avg Resolution Time (before Atomicwork): 18 hours
+- Avg Resolution Time (before AI): 18 hours
 - Avg Resolution Time (current): 4.5 hours
 - Top 3 Use Cases Active: IT Helpdesk, HR Queries, Asset Requests
 - Features NOT yet adopted: Journey Builder, Analytics Dashboard
@@ -353,7 +353,7 @@ GOALS SET LAST QBR:
         document.getElementById('slide-exec-deflection').textContent = `${deflectionPct}%`;
         document.getElementById('slide-exec-mttr-change').textContent = `${mttrReductionPct}% ↓`;
         
-        const execNarrative = `Atomicwork's partnership with ${companyName} has delivered substantial dividends in Q1/Q2, accelerating ticket resolutions and reclaiming vital business capacity. With ${activeUsers} of ${totalLicensed} licensed seats active (${((activeUsers/totalLicensed)*100).toFixed(0)}% adoption), our Agentic AI has successfully deflected ${deflectionPct}% of support volume, allowing internal employees to receive instant help while significantly thinning the manual desk queue.`;
+        const execNarrative = `Our partnership with ${companyName} has delivered substantial dividends in Q1/Q2, accelerating ticket resolutions and reclaiming vital capacity. With ${activeUsers} of ${totalLicensed} licensed seats active (${((activeUsers/totalLicensed)*100).toFixed(0)}% adoption), our Agentic AI has successfully deflected ${deflectionPct}% of support volume, allowing internal employees to receive instant help while significantly thinning the manual desk queue.`;
         document.getElementById('slide-exec-summary-narrative').textContent = execNarrative;
 
         // Update SLIDE 3 (Value Delivered)
@@ -479,14 +479,14 @@ GOALS SET LAST QBR:
 
         csmEmphasize.innerHTML = `
             <li><strong>Reclaimed Focus Time ROI:</strong> Emphasize the ${dollarRoi} ($369K) value in reclaimed hours to Sandeep Kumar. Make the business outcome the absolute hero metric.</li>
-            <li><strong>HR Team Scaling Case Study:</strong> Showcase March's HR rollout to prove that Atomicwork is a true ESM partner, reducing manual HR query times by 74%.</li>
+            <li><strong>HR Team Scaling Case Study:</strong> Showcase March's HR rollout to prove that the platform is a true ESM partner, reducing manual HR query times by 74%.</li>
             <li><strong>Time-to-Value vs Legacy ITSM:</strong> Proactively position the 85% active seat adoption rate as an elite industry benchmark ServiceNow rarely matches.</li>
         `;
 
         csmCareful.innerHTML = `
             <li><strong>Okta Integration Escalation:</strong> Avoid defensive tones. Proactively state that our new batch patch releases on May 22 with testing on May 25 to close the case.</li>
             <li><strong>The 66% Deflection vs 85% Target:</strong> Frame the 66% as an outstanding foundational launch, detailing the exact bridge actions (FAQ KB expansion) to reach 80% in Q3.</li>
-            <li><strong>New IT Head displacement threat:</strong> Avoid criticizing ServiceNow. Emphasize Atomicwork's 10x faster agility, modern Slack/Teams interface, and drastically lower total cost of ownership.</li>
+            <li><strong>New IT Head displacement threat:</strong> Avoid criticizing ServiceNow. Emphasize the platform's 10x faster agility, modern Slack/Teams interface, and drastically lower total cost of ownership.</li>
         `;
     }
 
@@ -512,7 +512,7 @@ GOALS SET LAST QBR:
         'total licensed': 'total-licensed', 'licensed': 'total-licensed', 'seats': 'total-licensed', 'licensed seats': 'total-licensed',
         'tickets raised': 'tickets-raised', 'tickets': 'tickets-raised', 'volume': 'tickets-raised',
         'tickets auto-resolved by ai agent': 'tickets-deflected', 'tickets deflected': 'tickets-deflected', 'deflected': 'tickets-deflected', 'auto resolved': 'tickets-deflected', 'resolved by ai': 'tickets-deflected',
-        'avg resolution time (before atomicwork)': 'resolution-before', 'avg resolution time before': 'resolution-before', 'resolution before': 'resolution-before', 'before resolution': 'resolution-before',
+        'avg resolution time (before atomicwork)': 'resolution-before', 'avg resolution time (before ai)': 'resolution-before', 'avg resolution time (before)': 'resolution-before', 'avg resolution time before': 'resolution-before', 'resolution before': 'resolution-before', 'before resolution': 'resolution-before',
         'avg resolution time (current)': 'resolution-current', 'avg resolution time current': 'resolution-current', 'resolution current': 'resolution-current', 'current resolution': 'resolution-current',
         'top 3 use cases active': 'top-use-cases', 'top use cases': 'top-use-cases', 'use cases': 'top-use-cases',
         'features not yet adopted': 'not-adopted', 'not adopted': 'not-adopted', 'missing features': 'not-adopted',
